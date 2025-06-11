@@ -3,14 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <!-- <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> -->
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+
     <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
     <title>My Island</title>
   </head>
   <body>
-    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable, .clickable1">
+    <a-scene
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable, .clickable1"
+    >
       <a-assets>
         <audio id="elk-sound" src="/audio/elk.mp3" preload="auto"></audio>
         <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
@@ -36,7 +41,7 @@
           id="island-red-sky"
           src="/models/island-red-sky.glb"
         ></a-asset-item>
-         <a-asset-item
+        <a-asset-item
           id="winter-island"
           src="/models/winter-island.glb"
         ></a-asset-item>
@@ -72,7 +77,7 @@
         rotation="0 45 0"
       >
       </a-entity>
-       <a-entity
+      <a-entity
         gltf-model="#winter-island"
         position="-20 -1 8"
         scale="0.5 0.5 0.5"
