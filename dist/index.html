@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script> -->
     <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
-
     <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
     <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
@@ -21,10 +20,14 @@
         <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
         <audio id="birds-sound" src="/audio/birds.mp3" preload="auto"></audio>
         <audio id="woman-sound" src="/audio/woman.mp3" preload="auto"></audio>
-        <a-asset-item id="forest-floor" src="/models/forest-floor.glb">
-        </a-asset-item>
-        <a-asset-item id="ladyflowers" src="/models/ladyflowers.glb">
-        </a-asset-item>
+        <a-asset-item
+          id="forest-floor"
+          src="/models/forest-floor.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="ladyflowers"
+          src="/models/ladyflowers.glb"
+        ></a-asset-item>
         <a-asset-item
           id="fantasy-house"
           src="/models/fantasy-house.glb"
@@ -50,6 +53,7 @@
           src="/models/stone-floor.glb"
         ></a-asset-item>
       </a-assets>
+
       <a-sky
         src="/images/stars-sky.jpg"
         rotation="0 0 0"
@@ -61,29 +65,29 @@
         position="-5 -1 -2"
         scale="5 5 5"
         rotation="0 -90 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#island-red-sky"
         position="0 -9 0"
         scale="1 1 1"
         rotation="0 -90 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#sky-house"
         position="-14 4 3"
         scale="0.04 0.04 0.04"
         rotation="0 45 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#winter-island"
         position="-20 -1 8"
         scale="0.5 0.5 0.5"
         rotation="10 5 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         id="elk-click"
         class="clickable"
@@ -92,36 +96,39 @@
         position="-12 0 8"
         scale="1 1 1"
         rotation="0 45 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#stone-floor"
         position="2 0 0"
         scale="5 5 5"
         rotation="5 5 2"
-      >
-      </a-entity>
+        class="floor"
+      ></a-entity>
+
       <a-entity
         gltf-model="#stone-floor"
         position="5 1 -13"
         scale="12 12 12"
         rotation="5 5 18"
-      >
-      </a-entity>
+        class="floor"
+      ></a-entity>
+
       <a-entity
         gltf-model="#stone-floor"
         position="-2 -0.2 4"
         scale="5 5 5"
         rotation="0 -90 0"
-      >
-      </a-entity>
+        class="floor"
+      ></a-entity>
+
       <a-entity
         gltf-model="#castle"
         position="12 5 -15"
         scale="1.5 1.5 1.5"
         rotation="18 5 2"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         id="owl-click"
         gltf-model="#owl"
@@ -130,8 +137,8 @@
         rotation="0 -90 0"
         class="clickable"
         owl-action
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         id="ladyflowers-click"
         gltf-model="#ladyflowers"
@@ -140,28 +147,42 @@
         rotation="0 -240 0"
         ladyflowers-action
         class="clickable1"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#fantasy-house"
         position="-5 0.1 0"
         scale="7 7 7"
         rotation="5 -5 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         gltf-model="#mushroom-house"
         position="5 0 3"
         scale="25 25 25"
         rotation="0 -90 0"
-      >
-      </a-entity>
+      ></a-entity>
+
       <a-entity
         camera
         position="-7 1.6 13.5"
         look-controls
         wasd-controls
       ></a-entity>
+
+      <!-- ✅ VR Controller Teleportation and Interaction -->
+      <a-entity
+        hand-controls="hand: left"
+        teleport-controls="button: trigger; collisionEntities: .floor;"
+        raycaster="objects: .clickable, .clickable1"
+      >
+      </a-entity>
+
+      <a-entity
+        laser-controls="hand: right"
+        raycaster="objects: .clickable, .clickable1"
+      >
+      </a-entity>
     </a-scene>
 
     <script>
@@ -172,7 +193,6 @@
 
           el.addEventListener("click", () => {
             console.log("Elk clicked!");
-
             if (sound) {
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
@@ -194,6 +214,7 @@
           });
         },
       });
+
       AFRAME.registerComponent("ladyflowers-action", {
         init: function () {
           const el = this.el;
@@ -209,6 +230,7 @@
           });
         },
       });
+
       AFRAME.registerComponent("owl-action", {
         init: function () {
           const el = this.el;
@@ -216,7 +238,6 @@
 
           el.addEventListener("click", () => {
             console.log("Owl clicked!");
-
             if (sound) {
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
@@ -272,16 +293,15 @@
           });
         });
       });
+
       document.addEventListener("DOMContentLoaded", function () {
         const scene = document.querySelector("a-scene");
         scene.addEventListener("loaded", function () {
           console.log("Scene loaded!");
-
           const birdsSound = document.querySelector("#birds-sound");
           if (birdsSound) {
             birdsSound.loop = true;
             birdsSound.volume = 0.3;
-
             document.addEventListener(
               "click",
               function playBackgroundSound() {
