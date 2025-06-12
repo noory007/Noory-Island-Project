@@ -6,7 +6,7 @@
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/fernandojsg/aframe-teleport-controls@v4.3.2/dist/aframe-teleport-controls.min.js"></script>
     <title>My Island</title>
   </head>
   <body>
@@ -19,6 +19,7 @@
         <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
         <audio id="birds-sound" src="/audio/birds.mp3" preload="auto"></audio>
         <audio id="woman-sound" src="/audio/woman.mp3" preload="auto"></audio>
+
         <a-asset-item
           id="forest-floor"
           src="/models/forest-floor.glb"
@@ -163,13 +164,12 @@
         wasd-controls
       ></a-entity>
 
-      <!-- ✅ VR Controller Teleportation and Interaction -->
+      <!-- ✅ Working Teleportation Setup -->
       <a-entity
         hand-controls="hand: left"
         teleport-controls="button: trigger; collisionEntities: .floor;"
         raycaster="objects: .clickable, .clickable1"
       ></a-entity>
-
       <a-entity
         laser-controls="hand: right"
         raycaster="objects: .clickable, .clickable1"
@@ -262,7 +262,6 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM loaded, setting up interactions...");
-
         const clickableElements = document.querySelectorAll(".clickable");
         clickableElements.forEach((el) => {
           el.addEventListener("mouseenter", function () {
@@ -273,7 +272,6 @@
               easing: "easeOutQuad",
             });
           });
-
           el.addEventListener("mouseleave", function () {
             this.setAttribute("animation__hover", {
               property: "scale",
