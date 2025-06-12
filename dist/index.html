@@ -3,14 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>My Island (VR Ready)</title>
+    <title>My Island (VR & Interactions)</title>
 
-    <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
+    <script src="https://aframe.io/releases/1.7.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/fernandojsg/aframe-teleport-controls@v4.3.2/dist/aframe-teleport-controls.min.js"></script>
 
+    <!-- safe-gltf-model: suppresses GLTF warnings/errors -->
     <script>
-      // safe-gltf-model component to load models without GLTFLoader errors
       AFRAME.registerComponent("safe-gltf-model", {
         schema: { type: "selector" },
         init: function () {
@@ -19,28 +20,22 @@
           if (!src) return;
           const url = src.getAttribute("src");
           const loader = new THREE.GLTFLoader();
-
-          // patch parse errors
           const originalParse = loader.parse.bind(loader);
           loader.parse = (data, path, onLoad, onError) => {
             try {
               originalParse(data, path, onLoad, onError);
             } catch (e) {
-              console.warn("GLTFLoader parse warning:", e);
+              console.warn("GLTF parse warning:", e);
               onLoad(null);
             }
           };
-
           loader.load(
             url,
             (gltf) => {
-              if (gltf && gltf.scene) {
-                el.setObject3D("mesh", gltf.scene);
-                el.emit("model-loaded");
-              }
+              if (gltf && gltf.scene) el.setObject3D("mesh", gltf.scene);
             },
             undefined,
-            (err) => console.error("GLTF load error:", err)
+            (err) => console.error("GLTF error:", err)
           );
         },
         remove: function () {
@@ -51,18 +46,43 @@
   </head>
 
   <body>
-    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
+    <a-scene
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable, .clickable1"
+    >
       <a-assets>
         <audio id="elk-sound" src="/audio/elk.mp3" preload="auto"></audio>
         <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
         <audio id="birds-sound" src="/audio/birds.mp3" preload="auto"></audio>
         <audio id="woman-sound" src="/audio/woman.mp3" preload="auto"></audio>
 
-        <a-asset-item id="elk" src="/models/elk.glb"></a-asset-item>
-        <a-asset-item id="owl" src="/models/owl.glb"></a-asset-item>
+        <a-asset-item
+          id="forest-floor"
+          src="/models/forest-floor.glb"
+        ></a-asset-item>
         <a-asset-item
           id="ladyflowers"
           src="/models/ladyflowers.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="fantasy-house"
+          src="/models/fantasy-house.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="mushroom-house"
+          src="/models/mushroom-house.glb"
+        ></a-asset-item>
+        <a-asset-item id="sky-house" src="/models/sky-house.glb"></a-asset-item>
+        <a-asset-item id="elk" src="/models/elk.glb"></a-asset-item>
+        <a-asset-item id="castle" src="/models/castle.glb"></a-asset-item>
+        <a-asset-item id="owl" src="/models/owl.glb"></a-asset-item>
+        <a-asset-item
+          id="island-red-sky"
+          src="/models/island-red-sky.glb"
+        ></a-asset-item>
+        <a-asset-item
+          id="winter-island"
+          src="/models/winter-island.glb"
         ></a-asset-item>
         <a-asset-item
           id="stone-floor"
@@ -70,109 +90,163 @@
         ></a-asset-item>
       </a-assets>
 
-      <a-sky color="#222"></a-sky>
+      <a-sky
+        src="/images/stars-sky.jpg"
+        rotation="0 0 0"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 60000"
+      ></a-sky>
 
-      <!-- Clickable Entities with Sound + Animation -->
+      <!-- Environment models -->
       <a-entity
-        id="elk-click"
-        class="clickable"
-        position="-1 0 -3"
+        safe-gltf-model="#forest-floor"
+        position="-5 -1 -2"
+        scale="5 5 5"
+        rotation="0 -90 0"
+      ></a-entity>
+      <a-entity
+        safe-gltf-model="#island-red-sky"
+        position="0 -9 0"
         scale="1 1 1"
-        safe-gltf-model="#elk"
-        sound="src: #elk-sound; autoplay: false"
+        rotation="0 -90 0"
       ></a-entity>
-
       <a-entity
-        id="owl-click"
-        class="clickable"
-        position="1 1 -3"
-        scale="1 1 1"
-        safe-gltf-model="#owl"
-        sound="src: #owl-sound; autoplay: false"
+        safe-gltf-model="#sky-house"
+        position="-14 4 3"
+        scale="0.04 0.04 0.04"
+        rotation="0 45 0"
       ></a-entity>
-
       <a-entity
-        id="ladyflowers-click"
-        class="clickable"
-        position="0 0 -5"
-        scale="0.05 0.05 0.05"
-        safe-gltf-model="#ladyflowers"
-        sound="src: #woman-sound; autoplay: false"
+        safe-gltf-model="#winter-island"
+        position="-20 -1 8"
+        scale="0.5 0.5 0.5"
+        rotation="10 5 0"
+      ></a-entity>
+      <a-entity
+        safe-gltf-model="#fantasy-house"
+        position="-5 0.1 0"
+        scale="7 7 7"
+        rotation="5 -5 0"
+      ></a-entity>
+      <a-entity
+        safe-gltf-model="#mushroom-house"
+        position="5 0 3"
+        scale="25 25 25"
+        rotation="0 -90 0"
       ></a-entity>
 
-      <!-- Floor for teleport -->
+      <!-- Floor for teleporting -->
       <a-entity
         safe-gltf-model="#stone-floor"
         class="floor"
-        position="0 0 0"
+        position="2 0 0"
         scale="5 5 5"
+        rotation="5 5 2"
       ></a-entity>
-
-      <!-- Ambient birds sound -->
       <a-entity
-        id="birds-ambient"
-        sound="src: #birds-sound; autoplay: false; loop: true; volume: 0.3"
+        safe-gltf-model="#stone-floor"
+        class="floor"
+        position="5 1 -13"
+        scale="12 12 12"
+        rotation="5 5 18"
+      ></a-entity>
+      <a-entity
+        safe-gltf-model="#stone-floor"
+        class="floor"
+        position="-2 -0.2 4"
+        scale="5 5 5"
+        rotation="0 -90 0"
       ></a-entity>
 
-      <!-- VR Setup: camera + controllers with teleport & laser -->
+      <!-- Clickable, animated interactive models with sound -->
+      <a-entity
+        id="elk-click"
+        class="clickable"
+        elk-action
+        safe-gltf-model="#elk"
+        sound="src: #elk-sound; autoplay: false"
+        position="-12 0 8"
+        scale="1 1 1"
+        rotation="0 45 0"
+      ></a-entity>
+      <a-entity
+        id="owl-click"
+        class="clickable"
+        owl-action
+        safe-gltf-model="#owl"
+        sound="src: #owl-sound; autoplay: false"
+        position="20 5 -5"
+        scale="2 2 2"
+        rotation="0 -90 0"
+      ></a-entity>
+      <a-entity
+        id="ladyflowers-click"
+        class="clickable1"
+        ladyflowers-action
+        safe-gltf-model="#ladyflowers"
+        sound="src: #woman-sound; autoplay: false"
+        position="-28 -4 0"
+        scale="0.03 0.03 0.03"
+        rotation="0 -240 0"
+      ></a-entity>
+
+      <!-- Camera rig & VR controllers -->
       <a-entity id="cameraRig" position="0 1.6 0">
         <a-camera></a-camera>
-
-        <!-- Left hand for teleport -->
         <a-entity
           hand-controls="hand: left"
           teleport-controls="button: trigger; collisionEntities: .floor; cameraRig: #cameraRig"
         ></a-entity>
-
-        <!-- Right hand for laser click interaction -->
         <a-entity
           hand-controls="hand: right"
           laser-controls
           raycaster="objects: .clickable"
         ></a-entity>
       </a-entity>
+
+      <!-- Ambient birds sound -->
+      <a-entity
+        id="birds-ambient"
+        sound="src: #birds-sound; autoplay: false; loop: true; volume: 0.4"
+      ></a-entity>
     </a-scene>
 
     <script>
+      // Interaction logic & sound playback
       const elk = document.querySelector("#elk-click");
       const owl = document.querySelector("#owl-click");
       const lady = document.querySelector("#ladyflowers-click");
       const birds = document.querySelector("#birds-ambient");
 
-      // Start birds ambient sound on first interaction
+      // Start birds sound on first interaction
       window.addEventListener(
         "click",
         () => {
-          if (birds.components.sound) birds.components.sound.playSound();
+          birds.components.sound.playSound();
         },
         { once: true }
       );
 
-      function animateAndSound(ent, posTo, rotTo) {
+      function animate(ent, toPos, toRot) {
         ent.setAttribute("animation__move", {
           property: "position",
-          to: posTo,
-          dur: 1500,
+          to: toPos,
+          dur: 2000,
           easing: "easeInOutQuad",
         });
         ent.setAttribute("animation__rotate", {
           property: "rotation",
-          to: rotTo,
+          to: toRot,
           dur: 1500,
           easing: "easeInOutQuad",
         });
-        if (ent.components.sound) ent.components.sound.playSound();
+        ent.components.sound.playSound();
       }
 
-      elk.addEventListener("click", () => {
-        animateAndSound(elk, "-1 0 -1", "0 360 0");
-      });
-      owl.addEventListener("click", () => {
-        animateAndSound(owl, "1 2 -3", "0 360 0");
-      });
-      lady.addEventListener("click", () => {
-        animateAndSound(lady, "0 0 -3", "0 -360 0");
-      });
+      elk.addEventListener("click", () => animate(elk, "-12 0 12", "0 225 0"));
+      owl.addEventListener("click", () => animate(owl, "20 8 -2", "0 225 0"));
+      lady.addEventListener("click", () =>
+        animate(lady, "-28 0 2", "0 -225 0")
+      );
     </script>
   </body>
 </html>
