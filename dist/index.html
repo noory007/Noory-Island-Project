@@ -7,6 +7,50 @@
     <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/fernandojsg/aframe-teleport-controls@v4.3.2/dist/aframe-teleport-controls.min.js"></script>
+
+    <script>
+      // Fix to ignore KHR_materials_pbrSpecularGlossiness warnings
+      AFRAME.registerComponent("safe-gltf-model", {
+        schema: { type: "selector" },
+        init: function () {
+          const el = this.el;
+          const modelAsset = this.data;
+
+          if (!modelAsset) {
+            console.error("No model asset found for safe-gltf-model");
+            return;
+          }
+
+          const loader = new THREE.GLTFLoader();
+
+          loader.register((parser) => {
+            parser.extensions.KHR_materials_pbrSpecularGlossiness = () => {
+              console.warn(
+                "Ignoring unsupported extension: KHR_materials_pbrSpecularGlossiness"
+              );
+              return {};
+            };
+            return parser;
+          });
+
+          loader.load(
+            modelAsset.getAttribute("src"),
+            (gltf) => {
+              el.setObject3D("mesh", gltf.scene);
+              el.emit("model-loaded", { format: "gltf", model: gltf.scene });
+            },
+            undefined,
+            (error) => {
+              console.error("Error loading GLTF model:", error);
+            }
+          );
+        },
+        remove: function () {
+          this.el.removeObject3D("mesh");
+        },
+      });
+    </script>
+
     <title>My Island</title>
   </head>
   <body>
@@ -60,31 +104,33 @@
         animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
       ></a-sky>
 
+      <!-- Changed gltf-model to safe-gltf-model for these to avoid warnings -->
       <a-entity
-        gltf-model="#forest-floor"
+        safe-gltf-model="#forest-floor"
         position="-5 -1 -2"
         scale="5 5 5"
         rotation="0 -90 0"
       ></a-entity>
       <a-entity
-        gltf-model="#island-red-sky"
+        safe-gltf-model="#island-red-sky"
         position="0 -9 0"
         scale="1 1 1"
         rotation="0 -90 0"
       ></a-entity>
       <a-entity
-        gltf-model="#sky-house"
+        safe-gltf-model="#sky-house"
         position="-14 4 3"
         scale="0.04 0.04 0.04"
         rotation="0 45 0"
       ></a-entity>
       <a-entity
-        gltf-model="#winter-island"
+        safe-gltf-model="#winter-island"
         position="-20 -1 8"
         scale="0.5 0.5 0.5"
         rotation="10 5 0"
       ></a-entity>
 
+      <!-- Kept gltf-model for interactive entities -->
       <a-entity
         id="elk-click"
         class="clickable"
@@ -95,22 +141,23 @@
         rotation="0 45 0"
       ></a-entity>
 
+      <!-- Changed these stone floors to safe-gltf-model to avoid warnings -->
       <a-entity
-        gltf-model="#stone-floor"
+        safe-gltf-model="#stone-floor"
         position="2 0 0"
         scale="5 5 5"
         rotation="5 5 2"
         class="floor"
       ></a-entity>
       <a-entity
-        gltf-model="#stone-floor"
+        safe-gltf-model="#stone-floor"
         position="5 1 -13"
         scale="12 12 12"
         rotation="5 5 18"
         class="floor"
       ></a-entity>
       <a-entity
-        gltf-model="#stone-floor"
+        safe-gltf-model="#stone-floor"
         position="-2 -0.2 4"
         scale="5 5 5"
         rotation="0 -90 0"
@@ -118,7 +165,7 @@
       ></a-entity>
 
       <a-entity
-        gltf-model="#castle"
+        safe-gltf-model="#castle"
         position="12 5 -15"
         scale="1.5 1.5 1.5"
         rotation="18 5 2"
@@ -145,13 +192,13 @@
       ></a-entity>
 
       <a-entity
-        gltf-model="#fantasy-house"
+        safe-gltf-model="#fantasy-house"
         position="-5 0.1 0"
         scale="7 7 7"
         rotation="5 -5 0"
       ></a-entity>
       <a-entity
-        gltf-model="#mushroom-house"
+        safe-gltf-model="#mushroom-house"
         position="5 0 3"
         scale="25 25 25"
         rotation="0 -90 0"
