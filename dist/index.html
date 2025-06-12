@@ -7,41 +7,37 @@
     <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/fernandojsg/aframe-teleport-controls@v4.3.2/dist/aframe-teleport-controls.min.js"></script>
+    <title>My Island</title>
 
+    <!-- Add safe-gltf-model component to handle KHR_materials_pbrSpecularGlossiness warning -->
     <script>
-      // Fix to ignore KHR_materials_pbrSpecularGlossiness warnings
       AFRAME.registerComponent("safe-gltf-model", {
-        schema: { type: "selector" },
+        schema: { type: "asset" },
         init: function () {
           const el = this.el;
-          const modelAsset = this.data;
-
-          if (!modelAsset) {
-            console.error("No model asset found for safe-gltf-model");
+          const src = this.data;
+          if (!src) {
             return;
           }
-
           const loader = new THREE.GLTFLoader();
-
-          loader.register((parser) => {
-            parser.extensions.KHR_materials_pbrSpecularGlossiness = () => {
-              console.warn(
-                "Ignoring unsupported extension: KHR_materials_pbrSpecularGlossiness"
-              );
-              return {};
+          // Patch to ignore KHR_materials_pbrSpecularGlossiness extension warning
+          loader.register(function (parser) {
+            parser.getDependency = function () {
+              // noop override to avoid errors for unknown extensions
+              return Promise.resolve(null);
             };
             return parser;
           });
-
           loader.load(
-            modelAsset.getAttribute("src"),
+            src,
             (gltf) => {
               el.setObject3D("mesh", gltf.scene);
               el.emit("model-loaded", { format: "gltf", model: gltf.scene });
             },
             undefined,
             (error) => {
-              console.error("Error loading GLTF model:", error);
+              console.warn("safe-gltf-model failed to load model", error);
+              el.emit("model-error", { error: error });
             }
           );
         },
@@ -50,8 +46,6 @@
         },
       });
     </script>
-
-    <title>My Island</title>
   </head>
   <body>
     <a-scene
@@ -104,60 +98,58 @@
         animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
       ></a-sky>
 
-      <!-- Changed gltf-model to safe-gltf-model for these to avoid warnings -->
       <a-entity
-        safe-gltf-model="#forest-floor"
+        gltf-model="#forest-floor"
         position="-5 -1 -2"
         scale="5 5 5"
         rotation="0 -90 0"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#island-red-sky"
+        gltf-model="#island-red-sky"
         position="0 -9 0"
         scale="1 1 1"
         rotation="0 -90 0"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#sky-house"
+        gltf-model="#sky-house"
         position="-14 4 3"
         scale="0.04 0.04 0.04"
         rotation="0 45 0"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#winter-island"
+        gltf-model="#winter-island"
         position="-20 -1 8"
         scale="0.5 0.5 0.5"
         rotation="10 5 0"
       ></a-entity>
 
-      <!-- Kept gltf-model for interactive entities -->
+      <!-- Updated to use safe-gltf-model -->
       <a-entity
         id="elk-click"
         class="clickable"
         elk-action
-        gltf-model="#elk"
+        safe-gltf-model="#elk"
         position="-12 0 8"
         scale="1 1 1"
         rotation="0 45 0"
       ></a-entity>
 
-      <!-- Changed these stone floors to safe-gltf-model to avoid warnings -->
       <a-entity
-        safe-gltf-model="#stone-floor"
+        gltf-model="#stone-floor"
         position="2 0 0"
         scale="5 5 5"
         rotation="5 5 2"
         class="floor"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#stone-floor"
+        gltf-model="#stone-floor"
         position="5 1 -13"
         scale="12 12 12"
         rotation="5 5 18"
         class="floor"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#stone-floor"
+        gltf-model="#stone-floor"
         position="-2 -0.2 4"
         scale="5 5 5"
         rotation="0 -90 0"
@@ -165,15 +157,16 @@
       ></a-entity>
 
       <a-entity
-        safe-gltf-model="#castle"
+        gltf-model="#castle"
         position="12 5 -15"
         scale="1.5 1.5 1.5"
         rotation="18 5 2"
       ></a-entity>
 
+      <!-- Updated to use safe-gltf-model -->
       <a-entity
         id="owl-click"
-        gltf-model="#owl"
+        safe-gltf-model="#owl"
         position="20 5 -5"
         scale="2 2 2"
         rotation="0 -90 0"
@@ -181,9 +174,10 @@
         owl-action
       ></a-entity>
 
+      <!-- Updated to use safe-gltf-model -->
       <a-entity
         id="ladyflowers-click"
-        gltf-model="#ladyflowers"
+        safe-gltf-model="#ladyflowers"
         position="-28 -4 0"
         scale="0.015 0.015 0.015"
         rotation="0 -240 0"
@@ -192,13 +186,13 @@
       ></a-entity>
 
       <a-entity
-        safe-gltf-model="#fantasy-house"
+        gltf-model="#fantasy-house"
         position="-5 0.1 0"
         scale="7 7 7"
         rotation="5 -5 0"
       ></a-entity>
       <a-entity
-        safe-gltf-model="#mushroom-house"
+        gltf-model="#mushroom-house"
         position="5 0 3"
         scale="25 25 25"
         rotation="0 -90 0"
@@ -273,83 +267,14 @@
         init: function () {
           const el = this.el;
           const sound = document.querySelector("#owl-sound");
-
           el.addEventListener("click", () => {
             console.log("Owl clicked!");
             if (sound) {
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
             }
-
-            el.setAttribute("animation__fly", {
-              property: "position",
-              to: "-20 9 3",
-              dur: 3000,
-              easing: "easeInOutSine",
-            });
-
-            el.setAttribute("animation__flap", {
-              property: "rotation",
-              to: "0 -90 15",
-              dur: 500,
-              direction: "alternate",
-              loop: 6,
-              easing: "easeInOutSine",
-            });
-
-            el.setAttribute("animation__rotate", {
-              property: "rotation",
-              to: "0 90 0",
-              dur: 1000,
-              easing: "easeInOutQuad",
-            });
           });
         },
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOM loaded, setting up interactions...");
-        const clickableElements = document.querySelectorAll(".clickable");
-        clickableElements.forEach((el) => {
-          el.addEventListener("mouseenter", function () {
-            this.setAttribute("animation__hover", {
-              property: "scale",
-              to: "1.1 1.1 1.1",
-              dur: 200,
-              easing: "easeOutQuad",
-            });
-          });
-          el.addEventListener("mouseleave", function () {
-            this.setAttribute("animation__hover", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 200,
-              easing: "easeOutQuad",
-            });
-          });
-        });
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const scene = document.querySelector("a-scene");
-        scene.addEventListener("loaded", function () {
-          console.log("Scene loaded!");
-          const birdsSound = document.querySelector("#birds-sound");
-          if (birdsSound) {
-            birdsSound.loop = true;
-            birdsSound.volume = 0.3;
-            document.addEventListener(
-              "click",
-              function playBackgroundSound() {
-                birdsSound
-                  .play()
-                  .catch((e) => console.log("Background audio failed:", e));
-                document.removeEventListener("click", playBackgroundSound);
-              },
-              { once: true }
-            );
-          }
-        });
       });
     </script>
   </body>
