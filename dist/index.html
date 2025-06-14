@@ -12,6 +12,7 @@
   <body>
     <a-scene
       xr-mode-ui="enterVRButton: ; enterARButton: ; XRMode: xr"
+      webxr="requiredFeatures: local-floor"
       cursor="rayOrigin: mouse"
       raycaster="objects: .clickable, .clickable1"
     >
@@ -148,12 +149,37 @@
         rotation="0 -90 0"
       ></a-entity>
 
+      <!-- ADDED: Camera Rig with head -->
+      <a-entity id="cameraRig">
+        <a-entity
+          id="head"
+          camera
+          look-controls
+          wasd-controls
+          position="-7 1.6 13.5"
+        ></a-entity>
+      </a-entity>
+
+      <!-- ADDED: Left and Right Controllers -->
       <a-entity
-        camera
-        position="-7 1.6 13.5"
-        look-controls
-        wasd-controls
-      ></a-entity>
+        id="left-hand"
+        hand-controls="hand: left"
+        laser-controls
+        teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head; button: trigger"
+        raycaster="objects: .clickable, .clickable1"
+        line="color: blue"
+      >
+      </a-entity>
+
+      <a-entity
+        id="right-hand"
+        hand-controls="hand: right"
+        laser-controls
+        teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head; button: trigger"
+        raycaster="objects: .clickable, .clickable1"
+        line="color: red"
+      >
+      </a-entity>
     </a-scene>
 
     <script>
@@ -161,7 +187,6 @@
         init: function () {
           const el = this.el;
           const sound = document.querySelector("#elk-sound");
-
           el.addEventListener("click", () => {
             console.log("Elk clicked!");
             if (sound) {
@@ -204,7 +229,6 @@
         init: function () {
           const el = this.el;
           const sound = document.querySelector("#owl-sound");
-
           el.addEventListener("click", () => {
             console.log("Owl clicked!");
             if (sound) {
@@ -278,6 +302,24 @@
             );
           }
         });
+      });
+
+      // Optional: Log trigger press from controllers
+      AFRAME.registerComponent("controller-logger", {
+        init: function () {
+          this.el.addEventListener("triggerdown", () => {
+            console.log(`${this.el.id} trigger pressed`);
+          });
+        },
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .querySelector("#left-hand")
+          ?.setAttribute("controller-logger", "");
+        document
+          .querySelector("#right-hand")
+          ?.setAttribute("controller-logger", "");
       });
     </script>
   </body>
