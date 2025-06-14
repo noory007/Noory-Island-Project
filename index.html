@@ -10,7 +10,10 @@
     <title>My Island</title>
   </head>
   <body>
-    <a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable, .clickable1">
+    <a-scene
+      cursor="rayOrigin: mouse"
+      raycaster="objects: .clickable, .clickable1"
+    >
       <a-assets>
         <audio id="elk-sound" src="/audio/elk.mp3" preload="auto"></audio>
         <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
@@ -36,7 +39,7 @@
           id="island-red-sky"
           src="/models/island-red-sky.glb"
         ></a-asset-item>
-         <a-asset-item
+        <a-asset-item
           id="winter-island"
           src="/models/winter-island.glb"
         ></a-asset-item>
@@ -72,7 +75,7 @@
         rotation="0 45 0"
       >
       </a-entity>
-       <a-entity
+      <a-entity
         gltf-model="#winter-island"
         position="-20 -1 8"
         scale="0.5 0.5 0.5"
@@ -158,6 +161,8 @@
         wasd-controls
       ></a-entity>
     </a-scene>
+
+    <!-- Javascript starts from here -->
 
     <script>
       AFRAME.registerComponent("elk-action", {
