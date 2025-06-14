@@ -11,6 +11,7 @@
   </head>
   <body>
     <a-scene
+      xr-mode-ui="enterVRButton: ; enterARButton: ; XRMode: xr"
       cursor="rayOrigin: mouse"
       raycaster="objects: .clickable, .clickable1"
     >
@@ -58,42 +59,6 @@
         rotation="0 0 0"
         animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
       ></a-sky>
-
-      <!-- Teleportable floor for VR -->
-      <a-entity
-        geometry="primitive: plane; height: 100; width: 100"
-        material="visible: false"
-        position="0 0 0"
-        rotation="-90 0 0"
-        class="teleportable"
-      >
-      </a-entity>
-
-      <!-- Camera Rig with camera for VR -->
-      <a-entity id="cameraRig" position="-7 0 13.5">
-        <a-entity
-          camera
-          position="0 1.6 0"
-          look-controls
-          wasd-controls
-        ></a-entity>
-      </a-entity>
-
-      <!-- Right Controller with teleport -->
-      <a-entity
-        laser-controls="hand: right"
-        raycaster="objects: .teleportable"
-        teleport-controls="button: trigger; collisionEntities: .teleportable; cameraRig: #cameraRig;"
-      >
-      </a-entity>
-
-      <!-- Left Controller with teleport -->
-      <a-entity
-        laser-controls="hand: left"
-        raycaster="objects: .teleportable"
-        teleport-controls="button: trigger; collisionEntities: .teleportable; cameraRig: #cameraRig;"
-      >
-      </a-entity>
 
       <a-entity
         gltf-model="#forest-floor"
@@ -182,9 +147,15 @@
         scale="25 25 25"
         rotation="0 -90 0"
       ></a-entity>
+
+      <a-entity
+        camera
+        position="-7 1.6 13.5"
+        look-controls
+        wasd-controls
+      ></a-entity>
     </a-scene>
 
-    <!-- Javascript -->
     <script>
       AFRAME.registerComponent("elk-action", {
         init: function () {
@@ -197,14 +168,12 @@
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
             }
-
             el.setAttribute("animation__move", {
               property: "position",
               to: "-12 0 15",
               dur: 2000,
               easing: "easeInOutQuad",
             });
-
             el.setAttribute("animation__rotate", {
               property: "rotation",
               to: "0 180 0",
@@ -242,14 +211,12 @@
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
             }
-
             el.setAttribute("animation__fly", {
               property: "position",
               to: "-20 9 3",
               dur: 3000,
               easing: "easeInOutSine",
             });
-
             el.setAttribute("animation__flap", {
               property: "rotation",
               to: "0 -90 15",
@@ -258,7 +225,6 @@
               loop: 6,
               easing: "easeInOutSine",
             });
-
             el.setAttribute("animation__rotate", {
               property: "rotation",
               to: "0 90 0",
@@ -281,7 +247,6 @@
               easing: "easeOutQuad",
             });
           });
-
           el.addEventListener("mouseleave", function () {
             this.setAttribute("animation__hover", {
               property: "scale",
@@ -301,7 +266,6 @@
           if (birdsSound) {
             birdsSound.loop = true;
             birdsSound.volume = 0.3;
-
             document.addEventListener(
               "click",
               function playBackgroundSound() {
