@@ -1,300 +1,140 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <title>My Island VR</title>
     <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/IdeaSpaceVR/aframe-particle-system-component@1.0.2/dist/aframe-particle-system-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/super-hands@4.0.5/dist/super-hands.min.js"></script>
-    <script src="https://unpkg.com/aframe-teleport-controls/dist/aframe-teleport-controls.min.js"></script>
-    <title>My Island</title>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
+    <script src="https://unpkg.com/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
   </head>
   <body>
     <a-scene
-      cursor="rayOrigin: mouse"
-      raycaster="objects: .clickable, .clickable1"
+      vr-mode-ui="enabled: true"
+      renderer="antialias: true"
+      background="color: #ECECEC"
     >
-      <a-assets>
-        <audio id="elk-sound" src="/audio/elk.mp3" preload="auto"></audio>
-        <audio id="owl-sound" src="/audio/owl.mp3" preload="auto"></audio>
-        <audio id="birds-sound" src="/audio/birds.mp3" preload="auto"></audio>
-        <audio id="woman-sound" src="/audio/woman.mp3" preload="auto"></audio>
-        <a-asset-item id="forest-floor" src="/models/forest-floor.glb">
-        </a-asset-item>
-        <a-asset-item id="ladyflowers" src="/models/ladyflowers.glb">
-        </a-asset-item>
-        <a-asset-item
-          id="fantasy-house"
-          src="/models/fantasy-house.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="mushroom-house"
-          src="/models/mushroom-house.glb"
-        ></a-asset-item>
-        <a-asset-item id="sky-house" src="/models/sky-house.glb"></a-asset-item>
-        <a-asset-item id="elk" src="/models/elk.glb"></a-asset-item>
-        <a-asset-item id="castle" src="/models/castle.glb"></a-asset-item>
-        <a-asset-item id="owl" src="/models/owl.glb"></a-asset-item>
-        <a-asset-item
-          id="island-red-sky"
-          src="/models/island-red-sky.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="winter-island"
-          src="/models/winter-island.glb"
-        ></a-asset-item>
-        <a-asset-item
-          id="stone-floor"
-          src="/models/stone-floor.glb"
-        ></a-asset-item>
-      </a-assets>
-      <a-sky
-        src="/images/stars-sky.jpg"
-        rotation="0 0 0"
-        animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
-      ></a-sky>
+      <!-- Camera Rig with Teleportation -->
+      <a-entity id="cameraRig" movement-controls position="0 1.6 0">
+        <a-entity id="head" camera look-controls wasd-controls position="0 0 0">
+        </a-entity>
 
-      <a-entity
-        gltf-model="#forest-floor"
-        position="-5 -1 -2"
-        scale="5 5 5"
-        rotation="0 -90 0"
-      >
+        <!-- Laser Controllers for VR input -->
+        <a-entity
+          laser-controls="hand: left"
+          raycaster="objects: .clickable"
+        ></a-entity>
+        <a-entity
+          laser-controls="hand: right"
+          raycaster="objects: .clickable"
+        ></a-entity>
       </a-entity>
+
+      <!-- Teleportation -->
       <a-entity
-        gltf-model="#island-red-sky"
-        position="0 -9 0"
-        scale="1 1 1"
-        rotation="0 -90 0"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#sky-house"
-        position="-14 4 3"
-        scale="0.04 0.04 0.04"
-        rotation="0 45 0"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#winter-island"
-        position="-20 -1 8"
-        scale="0.5 0.5 0.5"
-        rotation="10 5 0"
-      >
-      </a-entity>
-      <a-entity
-        id="elk-click"
-        class="clickable"
-        elk-action
-        gltf-model="#elk"
-        position="-12 0 8"
-        scale="1 1 1"
-        rotation="0 45 0"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#stone-floor"
-        position="2 0 0"
-        scale="5 5 5"
-        rotation="5 5 2"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#stone-floor"
-        position="5 1 -13"
-        scale="12 12 12"
-        rotation="5 5 18"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#stone-floor"
-        position="-2 -0.2 4"
-        scale="5 5 5"
-        rotation="0 -90 0"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#castle"
-        position="12 5 -15"
-        scale="1.5 1.5 1.5"
-        rotation="18 5 2"
-      >
-      </a-entity>
-      <a-entity
-        id="owl-click"
-        gltf-model="#owl"
-        position="20 5 -5"
-        scale="2 2 2"
-        rotation="0 -90 0"
-        class="clickable"
-        owl-action
-      >
-      </a-entity>
-      <a-entity
-        id="ladyflowers-click"
-        gltf-model="#ladyflowers"
-        position="-28 -4 0"
-        scale="0.015 0.015 0.015"
-        rotation="0 -240 0"
-        ladyflowers-action
-        class="clickable1"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#fantasy-house"
-        position="-5 0.1 0"
-        scale="7 7 7"
-        rotation="5 -5 0"
-      >
-      </a-entity>
-      <a-entity
-        gltf-model="#mushroom-house"
-        position="5 0 3"
-        scale="25 25 25"
-        rotation="0 -90 0"
-      >
-      </a-entity>
-      <a-entity
-        camera
-        position="-7 1.6 13.5"
-        look-controls
-        wasd-controls
+        teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head; button: trigger;"
+        raycaster="objects: [ground]"
       ></a-entity>
+
+      <!-- Lights -->
+      <a-entity light="type: ambient; color: #888"></a-entity>
+      <a-entity
+        light="type: directional; color: #fff; intensity: 1"
+        position="0 10 5"
+      ></a-entity>
+
+      <!-- Ground -->
+      <a-plane
+        position="0 0 -4"
+        rotation="-90 0 0"
+        width="50"
+        height="50"
+        color="#7BC8A4"
+        class="clickable"
+        id="ground"
+      ></a-plane>
+
+      <!-- Models -->
+      <a-entity
+        id="owl"
+        class="clickable"
+        position="3 1.5 -5"
+        gltf-model="#owlModel"
+        scale="1 1 1"
+        animation-mixer
+        sound="src: #owlSound; on: click"
+      ></a-entity>
+      <a-entity
+        id="elk"
+        class="clickable"
+        position="-2 0 -5"
+        gltf-model="#elkModel"
+        scale="1 1 1"
+        sound="src: #elkSound; on: click"
+      ></a-entity>
+      <a-entity
+        id="ladyflowers"
+        class="clickable"
+        position="0 0 -3"
+        gltf-model="#ladyModel"
+        scale="1 1 1"
+        sound="src: #ladySound; on: click"
+      ></a-entity>
+
+      <!-- Background audio -->
+      <a-sound
+        src="#ambientSound"
+        autoplay="true"
+        loop="true"
+        volume="0.3"
+      ></a-sound>
+
+      <!-- Assets -->
+      <a-assets>
+        <a-asset-item id="owlModel" src="models/owl.glb"></a-asset-item>
+        <a-asset-item id="elkModel" src="models/elk.glb"></a-asset-item>
+        <a-asset-item
+          id="ladyModel"
+          src="models/ladyflowers.glb"
+        ></a-asset-item>
+        <audio id="owlSound" src="audio/owl.mp3"></audio>
+        <audio id="elkSound" src="audio/elk.mp3"></audio>
+        <audio id="ladySound" src="audio/ladyflowers.mp3"></audio>
+        <audio id="ambientSound" src="audio/ambient.mp3"></audio>
+      </a-assets>
+
+      <!-- JavaScript Interaction -->
+      <script>
+        AFRAME.registerComponent("click-animation", {
+          init: function () {
+            this.el.addEventListener("click", () => {
+              if (this.el.id === "elk") {
+                this.el.setAttribute("animation", {
+                  property: "position",
+                  to: "-2 0 -2",
+                  dur: 3000,
+                  easing: "easeInOutQuad",
+                });
+              } else if (this.el.id === "owl") {
+                this.el.setAttribute("animation", {
+                  property: "rotation",
+                  to: "0 360 0",
+                  dur: 2000,
+                });
+              }
+            });
+
+            this.el.addEventListener("mouseenter", () => {
+              this.el.setAttribute("scale", "1.2 1.2 1.2");
+            });
+            this.el.addEventListener("mouseleave", () => {
+              this.el.setAttribute("scale", "1 1 1");
+            });
+          },
+        });
+
+        document.querySelectorAll(".clickable").forEach((el) => {
+          el.setAttribute("click-animation", "");
+        });
+      </script>
     </a-scene>
-
-    <!-- Javascript starts from here -->
-
-    <script>
-      AFRAME.registerComponent("elk-action", {
-        init: function () {
-          const el = this.el;
-          const sound = document.querySelector("#elk-sound");
-
-          el.addEventListener("click", () => {
-            console.log("Elk clicked!");
-
-            if (sound) {
-              sound.currentTime = 0;
-              sound.play().catch((e) => console.log("Audio play failed:", e));
-            }
-
-            el.setAttribute("animation__move", {
-              property: "position",
-              to: "-12 0 15",
-              dur: 2000,
-              easing: "easeInOutQuad",
-            });
-
-            el.setAttribute("animation__rotate", {
-              property: "rotation",
-              to: "0 180 0",
-              dur: 1000,
-              easing: "easeInOutQuad",
-            });
-          });
-        },
-      });
-      AFRAME.registerComponent("ladyflowers-action", {
-        init: function () {
-          const el = this.el;
-          const sound = document.querySelector("#woman-sound");
-          el.addEventListener("click", () => {
-            console.log("woman clicked!");
-            if (sound) {
-              sound.currentTime = 0;
-              sound
-                .play()
-                .catch((e) => console.log("Woman audio play failed:", e));
-            }
-          });
-        },
-      });
-      AFRAME.registerComponent("owl-action", {
-        init: function () {
-          const el = this.el;
-          const sound = document.querySelector("#owl-sound");
-
-          el.addEventListener("click", () => {
-            console.log("Owl clicked!");
-
-            if (sound) {
-              sound.currentTime = 0;
-              sound.play().catch((e) => console.log("Audio play failed:", e));
-            }
-
-            el.setAttribute("animation__fly", {
-              property: "position",
-              to: "-20 9 3",
-              dur: 3000,
-              easing: "easeInOutSine",
-            });
-
-            el.setAttribute("animation__flap", {
-              property: "rotation",
-              to: "0 -90 15",
-              dur: 500,
-              direction: "alternate",
-              loop: 6,
-              easing: "easeInOutSine",
-            });
-
-            el.setAttribute("animation__rotate", {
-              property: "rotation",
-              to: "0 90 0",
-              dur: 1000,
-              easing: "easeInOutQuad",
-            });
-          });
-        },
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOM loaded, setting up interactions...");
-
-        const clickableElements = document.querySelectorAll(".clickable");
-        clickableElements.forEach((el) => {
-          el.addEventListener("mouseenter", function () {
-            this.setAttribute("animation__hover", {
-              property: "scale",
-              to: "1.1 1.1 1.1",
-              dur: 200,
-              easing: "easeOutQuad",
-            });
-          });
-
-          el.addEventListener("mouseleave", function () {
-            this.setAttribute("animation__hover", {
-              property: "scale",
-              to: "1 1 1",
-              dur: 200,
-              easing: "easeOutQuad",
-            });
-          });
-        });
-      });
-      document.addEventListener("DOMContentLoaded", function () {
-        const scene = document.querySelector("a-scene");
-        scene.addEventListener("loaded", function () {
-          console.log("Scene loaded!");
-
-          const birdsSound = document.querySelector("#birds-sound");
-          if (birdsSound) {
-            birdsSound.loop = true;
-            birdsSound.volume = 0.3;
-
-            document.addEventListener(
-              "click",
-              function playBackgroundSound() {
-                birdsSound
-                  .play()
-                  .catch((e) => console.log("Background audio failed:", e));
-                document.removeEventListener("click", playBackgroundSound);
-              },
-              { once: true }
-            );
-          }
-        });
-      });
-    </script>
   </body>
 </html>
