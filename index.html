@@ -59,6 +59,42 @@
         animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
       ></a-sky>
 
+      <!-- Teleportable floor for VR -->
+      <a-entity
+        geometry="primitive: plane; height: 100; width: 100"
+        material="visible: false"
+        position="0 0 0"
+        rotation="-90 0 0"
+        class="teleportable"
+      >
+      </a-entity>
+
+      <!-- Camera Rig with camera for VR -->
+      <a-entity id="cameraRig" position="-7 0 13.5">
+        <a-entity
+          camera
+          position="0 1.6 0"
+          look-controls
+          wasd-controls
+        ></a-entity>
+      </a-entity>
+
+      <!-- Right Controller with teleport -->
+      <a-entity
+        laser-controls="hand: right"
+        raycaster="objects: .teleportable"
+        teleport-controls="button: trigger; collisionEntities: .teleportable; cameraRig: #cameraRig;"
+      >
+      </a-entity>
+
+      <!-- Left Controller with teleport -->
+      <a-entity
+        laser-controls="hand: left"
+        raycaster="objects: .teleportable"
+        teleport-controls="button: trigger; collisionEntities: .teleportable; cameraRig: #cameraRig;"
+      >
+      </a-entity>
+
       <a-entity
         gltf-model="#forest-floor"
         position="-5 -1 -2"
@@ -146,29 +182,9 @@
         scale="25 25 25"
         rotation="0 -90 0"
       ></a-entity>
-
-      <!-- Camera -->
-      <a-entity
-        camera
-        position="-7 1.6 13.5"
-        look-controls
-        wasd-controls
-      ></a-entity>
-
-      <!-- WebXR VR Controllers -->
-      <a-entity
-        laser-controls="hand: right"
-        raycaster="objects: .clickable, .clickable1"
-        cursor="fuse: false"
-      ></a-entity>
-      <a-entity
-        laser-controls="hand: left"
-        raycaster="objects: .clickable, .clickable1"
-        cursor="fuse: false"
-      ></a-entity>
     </a-scene>
 
-    <!-- Javascript starts from here -->
+    <!-- Javascript -->
     <script>
       AFRAME.registerComponent("elk-action", {
         init: function () {
@@ -177,7 +193,6 @@
 
           el.addEventListener("click", () => {
             console.log("Elk clicked!");
-
             if (sound) {
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
@@ -223,7 +238,6 @@
 
           el.addEventListener("click", () => {
             console.log("Owl clicked!");
-
             if (sound) {
               sound.currentTime = 0;
               sound.play().catch((e) => console.log("Audio play failed:", e));
@@ -257,7 +271,6 @@
 
       document.addEventListener("DOMContentLoaded", function () {
         console.log("DOM loaded, setting up interactions...");
-
         const clickableElements = document.querySelectorAll(".clickable");
         clickableElements.forEach((el) => {
           el.addEventListener("mouseenter", function () {
@@ -284,7 +297,6 @@
         const scene = document.querySelector("a-scene");
         scene.addEventListener("loaded", function () {
           console.log("Scene loaded!");
-
           const birdsSound = document.querySelector("#birds-sound");
           if (birdsSound) {
             birdsSound.loop = true;
