@@ -61,6 +61,8 @@
         animation="property: rotation; to: 0 360 0; loop: true; dur: 60000; easing: linear"
       ></a-sky>
 
+      <!-- 3D Environment Elements (Models) -->
+      <!-- (Your existing entities go here, unchanged) -->
       <a-entity
         gltf-model="#forest-floor"
         position="-5 -1 -2"
@@ -149,7 +151,7 @@
         rotation="0 -90 0"
       ></a-entity>
 
-      <!-- ADDED: Camera Rig with head -->
+      <!-- Camera Rig and Head -->
       <a-entity id="cameraRig">
         <a-entity
           id="head"
@@ -160,7 +162,7 @@
         ></a-entity>
       </a-entity>
 
-      <!-- ADDED: Left and Right Controllers -->
+      <!-- Left Controller (Move) -->
       <a-entity
         id="left-hand"
         hand-controls="hand: left"
@@ -168,9 +170,11 @@
         teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head; button: trigger"
         raycaster="objects: .clickable, .clickable1"
         line="color: blue"
-      >
-      </a-entity>
+        thumbstick-move="rig: #cameraRig"
+        controller-logger
+      ></a-entity>
 
+      <!-- Right Controller (Rotate) -->
       <a-entity
         id="right-hand"
         hand-controls="hand: right"
@@ -178,8 +182,9 @@
         teleport-controls="cameraRig: #cameraRig; teleportOrigin: #head; button: trigger"
         raycaster="objects: .clickable, .clickable1"
         line="color: red"
-      >
-      </a-entity>
+        thumbstick-rotate="rig: #cameraRig"
+        controller-logger
+      ></a-entity>
     </a-scene>
 
     <script>
@@ -259,8 +264,71 @@
         },
       });
 
+      AFRAME.registerComponent("controller-logger", {
+        init: function () {
+          this.el.addEventListener("triggerdown", () => {
+            console.log(`${this.el.id} trigger pressed`);
+          });
+        },
+      });
+
+      AFRAME.registerComponent("thumbstick-move", {
+        schema: {
+          rig: { type: "selector" },
+          speed: { type: "number", default: 0.05 },
+        },
+        init: function () {
+          this.direction = { x: 0, y: 0 };
+          this.el.addEventListener("thumbstickmoved", (evt) => {
+            this.direction.x = evt.detail.x;
+            this.direction.y = evt.detail.y;
+          });
+        },
+        tick: function () {
+          if (!this.data.rig) return;
+          const rig = this.data.rig.object3D;
+          const dir = this.direction;
+          if (Math.abs(dir.x) > 0.1 || Math.abs(dir.y) > 0.1) {
+            const forward = new THREE.Vector3();
+            rig.getWorldDirection(forward);
+            forward.y = 0;
+            forward.normalize();
+
+            const strafe = new THREE.Vector3()
+              .crossVectors(new THREE.Vector3(0, 1, 0), forward)
+              .normalize();
+
+            const move = new THREE.Vector3()
+              .addScaledVector(forward, -dir.y * this.data.speed)
+              .addScaledVector(strafe, dir.x * this.data.speed);
+
+            rig.position.add(move);
+          }
+        },
+      });
+
+      AFRAME.registerComponent("thumbstick-rotate", {
+        schema: {
+          rig: { type: "selector" },
+          speed: { type: "number", default: 0.5 },
+        },
+        init: function () {
+          this.rotationInput = { x: 0, y: 0 };
+          this.el.addEventListener("thumbstickmoved", (evt) => {
+            this.rotationInput.x = evt.detail.x;
+            this.rotationInput.y = evt.detail.y;
+          });
+        },
+        tick: function () {
+          if (!this.data.rig) return;
+          const rigObj = this.data.rig.object3D;
+          if (Math.abs(this.rotationInput.x) > 0.05) {
+            rigObj.rotation.y -= this.rotationInput.x * 0.01 * this.data.speed;
+          }
+        },
+      });
+
       document.addEventListener("DOMContentLoaded", function () {
-        console.log("DOM loaded, setting up interactions...");
         const clickableElements = document.querySelectorAll(".clickable");
         clickableElements.forEach((el) => {
           el.addEventListener("mouseenter", function () {
@@ -280,12 +348,9 @@
             });
           });
         });
-      });
 
-      document.addEventListener("DOMContentLoaded", function () {
         const scene = document.querySelector("a-scene");
         scene.addEventListener("loaded", function () {
-          console.log("Scene loaded!");
           const birdsSound = document.querySelector("#birds-sound");
           if (birdsSound) {
             birdsSound.loop = true;
@@ -302,24 +367,6 @@
             );
           }
         });
-      });
-
-      // Optional: Log trigger press from controllers
-      AFRAME.registerComponent("controller-logger", {
-        init: function () {
-          this.el.addEventListener("triggerdown", () => {
-            console.log(`${this.el.id} trigger pressed`);
-          });
-        },
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        document
-          .querySelector("#left-hand")
-          ?.setAttribute("controller-logger", "");
-        document
-          .querySelector("#right-hand")
-          ?.setAttribute("controller-logger", "");
       });
     </script>
   </body>
